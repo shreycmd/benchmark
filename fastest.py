@@ -18,9 +18,7 @@ words = [
 ]
 
 
-# =====================================================================
-# THE FASTEST PIPELINE: ASYNCIO.TO_THREAD + GATHER
-# =====================================================================
+
 
 def background_file_reader(filename, chunk_size, overlap, queue_obj, loop, num_workers):
     """
@@ -65,13 +63,12 @@ async def async_pipelined_search(filename, word):
     start = time.perf_counter()
     word_bytes = word.encode("utf-8")
     overlap = len(word_bytes) - 1
-    chunk_size = 50 * 1024 * 1024 # 50MB chunk size (Sweet Spot)
+    chunk_size = 50 * 1024 * 1024 
     
-    # Bounded asyncio queue (max 30 chunks in queue)
     queue_obj = asyncio.Queue(maxsize=30)
     loop = asyncio.get_running_loop()
     
-    num_workers = 4 # 4 Worker threads (Sweet Spot)
+    num_workers = 4
     results = []
     
     # Run the entire file reader inside a single background thread
@@ -107,7 +104,7 @@ def async_pipelined_process_worker(filename, word):
 
 
 def benchmark_async_pipeline():
-    print("\n========== OPTIMIZED ASYNCIO.TO_THREAD + GATHER ==========")
+    
     start_total = time.perf_counter()
     with ProcessPoolExecutor(max_workers=4) as executor:
         list(executor.map(abs, [1, 2, 3, 4]))
